@@ -1,0 +1,24 @@
+{
+  "name": "api-pagamento-mercado-pago",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "dev": "cross-env AWS_PROFILE=developer-cp npx serverless offline"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
+    "@types/uuid": "^10.0.0",
+    "cross-env": "^7.0.3",
+    "serverless-offline": "^14.4.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.848.0",
+    "@aws-sdk/lib-dynamodb": "^3.850.0",
+    "dotenv": "^17.2.0"
+  }
+}
