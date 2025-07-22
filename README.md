@@ -2,8 +2,9 @@
 
 API RESTful desenvolvida com Node.js, Serverless Framework e TypeScript para facilitar a integração com o Mercado Pago.  
 Ela permite criar pagamentos, escutar notificações via Webhook e armazenar informações essenciais no DynamoDB da AWS.
-
 Ideal para devs e empresas que desejam uma solução plug & play para processar pagamentos com o Mercado Pago de forma segura, rápida e escalável.
+
+Durante o desenvolvimento e testes locais, utilizamos o **ngrok** para expor o servidor local e permitir que o Mercado Pago envie notificações de Webhook para nossa aplicação, facilitando a validação e depuração dos eventos de pagamento.
 
 ## 📌 Informações Importantes
 
@@ -15,18 +16,14 @@ Para testar o fluxo de pagamento, você pode usar os seguintes dados fictícios 
 - 📄 CPF: `123.456.789-09` 
 
 No campo de email, pode usar qualquer email de teste (ou o seu) só para concluir o pagamento.
-
 Após realizar o pagamento, você pode verificar o status acessando a rota de confirmação (conforme documentação das rotas).
+
 ---
-
-## 🚀 Features
-
-Localmente, simulando o webhook via Postman
-
-Com ngrok, para um teste real com notificações automáticas
+## 👾 Features
 
 - Criação de preferências de pagamento
 - Escuta de Webhooks para notificação de status de pagamento
+- Utilizando ngrok para um teste real com notificações automáticas
 - Armazenamento e atualização do status dos pagamentos no DynamoDB
 - Projeto pronto para deploy na AWS com Serverless Framework
 - Suporte a ambiente local com `serverless-offline`
@@ -54,9 +51,22 @@ Com ngrok, para um teste real com notificações automáticas
 - Conta no [Mercado Pago Developers](https://www.mercadopago.com.br/developers)
 - Instalar o Serverless Framework
   ```bash
-  - npm install -g serverless
+  npm install -g serverless
   ```
 - ngrok para expor o servidor local (necessário para testar webhooks localmente)
+  ```bash
+  npm install -g ngrok
+  ```    
+## ⚙️ Criando a integração no Mercado Pago Developer
+
+- Acesse Mercado Pago Developers (https://www.mercadopago.com.br/developers).
+- Faça login e crie uma conta, se ainda não tiver.
+- Crie uma Aplicação no painel de desenvolvedor.
+- Na aplicação, gere as credenciais:
+  - 🔐 Access Token (chave secreta para autenticação das requisições no backend)
+  - 🔑 Public Key (usada geralmente no frontend, mas pode ser ignorada para este projeto backend)
+- Para testes, configure a integração do tipo Checkout Transparente em modo sandbox.
+- Defina a URL do Notification URL (Webhook) para apontar para seu backend (local via ngrok para dev, ou url pública no deploy).
 
 ## 📦 Instalação e Configuração
 
@@ -105,17 +115,6 @@ https://abc123.ngrok.io/webhook/mercado-pago
 
 📢 IMPORTANTE:
 Toda vez que você iniciar o ngrok, ele gera uma URL nova. Então, lembre-se de atualizar a URL do webhook no Mercado Pago sempre que reiniciar o ngrok.
-
-## ⚙️ Criando a integração no Mercado Pago Developer
-
-- Acesse Mercado Pago Developers (https://www.mercadopago.com.br/developers).
-- Faça login e crie uma conta, se ainda não tiver.
-- Crie uma Aplicação no painel de desenvolvedor.
-- Na aplicação, gere as credenciais:
-  - 🔐 Access Token (chave secreta para autenticação das requisições no backend)
-  - 🔑 Public Key (usada geralmente no frontend, mas pode ser ignorada para este projeto backend)
-- Para testes, configure a integração do tipo Checkout Transparente em modo sandbox.
-- Defina a URL do Notification URL (Webhook) para apontar para seu backend (local via ngrok para dev, ou url pública no deploy).
 
 ## 📩 Testando a API
 Criar pagamento: Faça um POST para a rota de criação de preferência (exemplo: /generate-payment ou conforme configuração do seu handler), que vai retornar a URL de pagamento sandbox.
