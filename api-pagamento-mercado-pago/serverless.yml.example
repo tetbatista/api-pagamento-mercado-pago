@@ -1,0 +1,56 @@
+service: api-pagamento-mercado-pago
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  profile: seu-perfil
+  region: sua-regiao
+  environment:
+    MERCADO_PAGO_ACCESS_TOKEN: ${env:MERCADO_PAGO_ACCESS_TOKEN}
+    MERCADO_PAGO_NOTIFICATION_URL: ${env:MERCADO_PAGO_NOTIFICATION_URL}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:UpdateItem
+          Resource:
+            - arn:aws:dynamodb:regiao:codigo:table/caminho-da-tabela
+            - arn:aws:dynamodb:regiao:codigo:table/caminho-da-tabela/index/preference_id-index
+
+functions:
+  generatePayment:
+    handler: src/config/mercadoPago.standardMonthlyPlan
+    events:
+      - httpApi:
+          path: generate-payment
+          method: get
+
+  createPayment:
+    handler: src/handlers/createPayment.handler
+    events:
+      - httpApi:
+          path: create-payment
+          method: get
+
+  confirmPayment:
+    handler: src/handlers/confirmPayment.handler
+    events:
+      - httpApi:
+          path: payment/confirm
+          method: get
+
+  mercadoPagoWebhook:
+    handler: src/handlers/mercadoPagoWebhook.handler
+    events:
+      - httpApi:
+          path: webhook/mercado-pago
+          method: post
+
