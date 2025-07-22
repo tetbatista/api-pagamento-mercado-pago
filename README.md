@@ -9,6 +9,10 @@ Ideal para devs e empresas que desejam uma solução plug & play para processar 
 
 ## 🚀 Features
 
+Localmente, simulando o webhook via Postman
+
+Com ngrok, para um teste real com notificações automáticas
+
 - Criação de preferências de pagamento
 - Escuta de Webhooks de notificação de pagamento
 - Armazenamento de dados essenciais no DynamoDB
