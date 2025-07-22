@@ -5,6 +5,18 @@ Ela permite criar pagamentos, escutar notificações via Webhook e armazenar inf
 
 Ideal para devs e empresas que desejam uma solução plug & play para processar pagamentos com o Mercado Pago de forma segura, rápida e escalável.
 
+## 📌 Informações Importantes
+
+Para testar o fluxo de pagamento, você pode usar os seguintes dados fictícios para fazer o pagamento:
+
+- 💳 Número do cartão: `1234 5678 9012 3456`  
+- 📆 Vencimento: `12/30`  
+- 🔐 CVV: `123`  
+- 📄 CPF: `123.456.789-09` 
+
+No campo de email, pode usar qualquer email de teste (ou o seu) só para concluir o pagamento.
+
+Após realizar o pagamento, você pode verificar o status acessando a rota de confirmação (conforme documentação das rotas).
 ---
 
 ## 🚀 Features
@@ -14,8 +26,8 @@ Localmente, simulando o webhook via Postman
 Com ngrok, para um teste real com notificações automáticas
 
 - Criação de preferências de pagamento
-- Escuta de Webhooks de notificação de pagamento
-- Armazenamento de dados essenciais no DynamoDB
+- Escuta de Webhooks para notificação de status de pagamento
+- Armazenamento e atualização do status dos pagamentos no DynamoDB
 - Projeto pronto para deploy na AWS com Serverless Framework
 - Suporte a ambiente local com `serverless-offline`
 - Modularizado com TypeScript
@@ -29,8 +41,9 @@ Com ngrok, para um teste real com notificações automáticas
 - AWS Lambda
 - Serverless Framework
 - DynamoDB
-- Mercado Pago SDK
-- serverless-offline
+- Mercado Pago API via Axios
+- serverless-offline (para desenvolvimento local)
+- ngrok (para expor localmente o webhook)
 
 ---
 
@@ -39,42 +52,74 @@ Com ngrok, para um teste real com notificações automáticas
 - [Node.js](https://nodejs.org/)
 - Conta na [AWS](https://aws.amazon.com/)
 - Conta no [Mercado Pago Developers](https://www.mercadopago.com.br/developers)
-- Instalar o Serverless Framework.
+- Instalar o Serverless Framework
+  ```bash
+  - npm install -g serverless
+  ```
+- ngrok para expor o servidor local (necessário para testar webhooks localmente)
 
-npm install -g serverless
-📦 Instalação
+## 📦 Instalação e Configuração
 
-Clone o projeto:
-git clone https://github.com/seu-usuario/api-pagamento-mercado-pago.git
+**Clone o projeto:**
+```bash
+git clone https://github.com/tetbatista/api-pagamento-mercado-pago.git
 cd api-pagamento-mercado-pago
+```
 
-Instale as dependências:
+**Instale as dependências:**
+```bash
 npm install
+```
 
-⚙️ Configuração
-Crie um arquivo .env na raiz do projeto com as seguintes variáveis:
-
-.env
+**Crie um arquivo .env na raiz do projeto com as seguintes variáveis (exemplo):**
+```bash
 MERCADO_PAGO_ACCESS_TOKEN=sua_chave_aqui
-MERCADO_PAGO_PUBLIC_KEY=sua_public_key_aqui
-DYNAMO_TABLE_NAME=nome_da_sua_tabela
+MERCADO_PAGO_NOTIFICATION_URL=sua_chave_ngrok-aqui
+```
 
-▶️ Rodar localmente
-Use o serverless-offline para testar a API localmente:
-npx serverless offline
+## 🛠️ Criar tabela no DynamoDB
+- Para armazenar os pagamentos, crie uma tabela no DynamoDB na região de preferência (adicione ela depois também no serverless.yml):
+- Nome da tabela: TableTest (ou o nome que preferir)
+- Chave primária: id_payment do tipo String
+- Não é obrigatório configurar índices secundários para o funcionamento básico
 
-☁️ Deploy na AWSCertifique-se que sua CLI da AWS está configurada. Para subir a aplicação:
-npx serverless deploy
+## 🚀 Rodando localmente com Serverless + Ngrok
+Como webhooks precisam ser acessíveis pela internet, usamos o ngrok para expor seu servidor local.
 
-📩 Exemplo de Webhook (para testes)
-{
-  "action": "payment.created",
-  "data": {
-    "id": "123456789"
-  }
-}
-🤝 Contribuição
-Fique à vontade para abrir issues ou enviar PRs!
+- Inicie o servidor local:
+```bash
+npm run dev
+```
 
-📬 Contato
-Feito com 💻 por Mateus Batista
+**O servidor vai rodar normalmente em http://localhost:3000 (ou a porta que aparecer no seu console).**
+
+## 🌐 Em outro terminal, rode o ngrok para expor a porta local:
+
+```bash
+ngrok http 3000
+```
+**O ngrok vai gerar uma URL pública (exemplo: https://abc123.ngrok.io). Essa URL será usada para configurar o webhook no Mercado Pago.**
+
+Atualize no painel do Mercado Pago (na configuração da sua aplicação, no campo Notification URL) essa URL do ngrok, adicionando o caminho do webhook, por exemplo:
+https://abc123.ngrok.io/webhook/mercado-pago
+
+📢 IMPORTANTE:
+Toda vez que você iniciar o ngrok, ele gera uma URL nova. Então, lembre-se de atualizar a URL do webhook no Mercado Pago sempre que reiniciar o ngrok.
+
+## ⚙️ Criando a integração no Mercado Pago Developer
+
+- Acesse Mercado Pago Developers (https://www.mercadopago.com.br/developers).
+- Faça login e crie uma conta, se ainda não tiver.
+- Crie uma Aplicação no painel de desenvolvedor.
+- Na aplicação, gere as credenciais:
+  - 🔐 Access Token (chave secreta para autenticação das requisições no backend)
+  - 🔑 Public Key (usada geralmente no frontend, mas pode ser ignorada para este projeto backend)
+- Para testes, configure a integração do tipo Checkout Transparente em modo sandbox.
+- Defina a URL do Notification URL (Webhook) para apontar para seu backend (local via ngrok para dev, ou url pública no deploy).
+
+## 📩 Testando a API
+Criar pagamento: Faça um POST para a rota de criação de preferência (exemplo: /generate-payment ou conforme configuração do seu handler), que vai retornar a URL de pagamento sandbox.
+Acesse essa URL, realize o pagamento com os dados de teste fornecidos acima.
+O webhook será acionado e vai atualizar o status do pagamento no DynamoDB.
+
+- Você pode consultar o status do pagamento via rota de consulta (exemplo: /confirm-payment?id_payment=...).
