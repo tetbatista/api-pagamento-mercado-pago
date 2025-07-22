@@ -15,18 +15,14 @@ Para testar o fluxo de pagamento, você pode usar os seguintes dados fictícios 
 - 📄 CPF: `123.456.789-09` 
 
 No campo de email, pode usar qualquer email de teste (ou o seu) só para concluir o pagamento.
-
 Após realizar o pagamento, você pode verificar o status acessando a rota de confirmação (conforme documentação das rotas).
+
 ---
-
-## 🚀 Features
-
-Localmente, simulando o webhook via Postman
-
-Com ngrok, para um teste real com notificações automáticas
+## 👾 Features
 
 - Criação de preferências de pagamento
 - Escuta de Webhooks para notificação de status de pagamento
+- Utilizando ngrok para um teste real com notificações automáticas
 - Armazenamento e atualização do status dos pagamentos no DynamoDB
 - Projeto pronto para deploy na AWS com Serverless Framework
 - Suporte a ambiente local com `serverless-offline`
