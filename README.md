@@ -1,4 +1,4 @@
-# API Pagamento Mercado Pago
+# API de Pagamento com Mercado Pago
 
 API RESTful desenvolvida com Node.js, Serverless Framework e TypeScript para facilitar a integração com o Mercado Pago.  
 Ela permite criar pagamentos, escutar notificações via Webhook e armazenar informações essenciais no DynamoDB da AWS.
@@ -85,6 +85,39 @@ npm install
 ```bash
 MERCADO_PAGO_ACCESS_TOKEN=sua_chave_aqui
 MERCADO_PAGO_NOTIFICATION_URL=sua_chave_ngrok-aqui
+```
+
+## 🔐 Configuração da AWS (credenciais locais)
+
+Para que o Serverless Framework consiga acessar sua conta AWS (e criar funções Lambda, tabelas DynamoDB, etc.), é necessário configurar suas credenciais no seu ambiente local.
+
+1. **Instale a AWS CLI (caso ainda não tenha):**  
+👉 [Guia de instalação](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+
+2. **Configure suas credenciais com o comando:**
+
+```bash
+aws configure
+```
+
+Você será solicitado a preencher:
+- AWS Access Key ID
+- AWS Secret Access Key
+- Default region name (ex: us-east-1)
+- Default output format (pode deixar em branco ou usar json)
+
+Esse comando irá criar automaticamente o seguinte arquivo no seu sistema:
+```bash
+~/.aws/credentials
+```
+**Esse arquivo será utilizado pelo Serverless Framework para autenticar e fazer deploy dos recursos na AWS.**
+
+💡 Caso prefira, também é possível criar esse arquivo manualmente. A estrutura é assim:
+
+```bash
+[default]
+aws_access_key_id = SUA_ACCESS_KEY
+aws_secret_access_key = SUA_SECRET_KEY
 ```
 
 ## 🛠️ Criar tabela no DynamoDB
